@@ -1,0 +1,25 @@
+services:
+  passage:
+    image: passage-arm-v2
+    pull_policy: never
+    environment:
+      - DENOM=upasg
+      - CHAINID=passage-localnet
+      - GAS_LIMIT=75000000
+    ports:
+      - '1317:1317'
+      - '26656:26656'
+      - '26657:26657'
+      - '9090:9090'
+    volumes:
+      - .data/passage:/root
+      - ./docker/entry-point.sh:/data/entry-point.sh
+    entrypoint:
+      [
+        '/data/entry-point.sh',
+        'pasg16z43tjws3vw06ej9v7nrszu0ldsmn0eyjnjpu8',
+        'pasg1t08es9sxvjt3rmmkf426ks4ce528m0u84lyv92',
+        'pasg1x0nystpdqr9dtcy02wh4tcmhjxjlnk009ngcs8',
+        'pasg1v3fwgyw9kgtm08dpmfrlergxzxazwqa3qqxvd7',
+        'pasg1r98zsyt50k7yk86pf28xhdtf5yedkf7wm7nu0n',
+      ]

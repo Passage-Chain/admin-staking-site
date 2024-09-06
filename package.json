@@ -6,9 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "docker:start": "docker compose up --remove-orphans -d",
+    "docker:stop": "docker compose down",
+    "dev:start": "bun run docker:start && bun run ./tests/setup-localnet.ts",
+    "dev:stop": "bun run docker:stop && rm -rf .data"
   },
   "dependencies": {
+    "@uju-labs/cosmos-utils": "workspace:*",
     "react": "^18",
     "react-dom": "^18",
     "next": "14.1.0"

@@ -1,0 +1,42 @@
+{
+  "chainId": "passagelocal-1",
+  "chainName": "passage-local",
+  "currencies": [
+    {
+      "coinDenom": "pasg",
+      "coinMinimalDenom": "upasg",
+      "coinDecimals": 6
+    }
+  ],
+  "rest": "http://localhost:1317",
+  "rpc": "http://localhost:26657",
+  "bech32Config": {
+    "bech32PrefixAccAddr": "pasg",
+    "bech32PrefixAccPub": "pasgpub",
+    "bech32PrefixValAddr": "pasgvaloper",
+    "bech32PrefixValPub": "pasgvaloperpub",
+    "bech32PrefixConsAddr": "pasgvalcons",
+    "bech32PrefixConsPub": "pasgvalconspub"
+  },
+  "feeCurrencies": [
+    {
+      "coinDenom": "pasg",
+      "coinMinimalDenom": "upasg",
+      "coinDecimals": 6,
+      "gasPriceStep": {
+        "low": 0.03,
+        "average": 0.04,
+        "high": 0.05
+      }
+    }
+  ],
+  "stakeCurrency": {
+    "coinDenom": "pasg",
+    "coinMinimalDenom": "upasg",
+    "coinDecimals": 6
+  },
+  "bip44": {
+    "coinType": 118
+  },
+  "chainSymbolImageUrl": "https://raw.githubusercontent.com/cosmos/chain-registry/master/passage/images/pasg.png"
+}

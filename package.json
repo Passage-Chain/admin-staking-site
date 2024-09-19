@@ -5,16 +5,14 @@
   "scripts": {
     "gen:graz": "graz generate -g",
     "gen:cw": "bun run ./setup/codegen.ts",
-    "codegen": "bun run gen:graz && bun run gen:cw",
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
+    "next:dev": "next dev",
+    "next:build": "next build",
+    "next:start": "next start",
+    "next:lint": "next lint",
     "docker:start": "docker compose up --remove-orphans -d",
     "docker:stop": "docker compose down",
-    "dev:start": "bun run docker:start && bun run ./setup/setup-localnet.ts",
-    "dev:stop": "bun run docker:stop && rm -rf .data",
-    "dev:clean": "rm -rf .data && rm -rf artifacts"
+    "dev:start": "bun run docker:start && bun run ./setup/setup-localnet.ts && bun run dev",
+    "dev:stop": "bun run docker:stop && rm -rf .data"
   },
   "dependencies": {
     "@cosmwasm/ts-codegen": "^1.11.1",

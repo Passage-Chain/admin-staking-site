@@ -11,7 +11,7 @@
     "next:lint": "next lint",
     "docker:start": "docker compose up --remove-orphans -d",
     "docker:stop": "docker compose down",
-    "dev:start": "bun run docker:start && bun run ./setup/setup-localnet.ts && bun run dev",
+    "dev:start": "bun run docker:start && bun run ./setup/setup-localnet.ts && bun run next:dev",
     "dev:stop": "bun run docker:stop && rm -rf .data"
   },
   "dependencies": {

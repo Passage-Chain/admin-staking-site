@@ -1,22 +1,22 @@
 services:
   passage:
-    image: passage-arm-v2
+    image: ghcr.io/ujulabs/passage-arm:v2.4.0
     environment:
       - DENOM=upasg
       - CHAINID=passagelocal-1
       - GAS_LIMIT=75000000
     ports:
-      - '1317:1317'
-      - '26656:26656'
-      - '26657:26657'
-      - '9090:9090'
+      - "1317:1317"
+      - "26656:26656"
+      - "26657:26657"
+      - "9090:9090"
     volumes:
       - .data/passage:/root
       - ./docker/entry-point.sh:/data/entry-point.sh
     entrypoint:
       [
-        '/data/entry-point.sh',
-        'pasg16z43tjws3vw06ej9v7nrszu0ldsmn0ey9hux6f',
-        'pasg1t08es9sxvjt3rmmkf426ks4ce528m0u8zm2try',
-        'pasg1x0nystpdqr9dtcy02wh4tcmhjxjlnk00jhxlkf',
+        "/data/entry-point.sh",
+        "pasg16z43tjws3vw06ej9v7nrszu0ldsmn0ey9hux6f",
+        "pasg1t08es9sxvjt3rmmkf426ks4ce528m0u8zm2try",
+        "pasg1x0nystpdqr9dtcy02wh4tcmhjxjlnk00jhxlkf"
       ]

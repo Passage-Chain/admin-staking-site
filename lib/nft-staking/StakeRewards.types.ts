@@ -4,9 +4,12 @@
 * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
 */
 
+export type Timestamp = Uint64;
+export type Uint64 = string;
 export interface InstantiateMsg {
   denom: string;
   duration_sec: number;
+  period_start: Timestamp;
   stake: string;
 }
 export type ExecuteMsg = ExecMsg;
@@ -34,13 +37,12 @@ export type QueryMsg1 = {
     address: string;
   };
 };
-export type Timestamp = Uint64;
-export type Uint64 = string;
 export type Addr = string;
 export interface Config {
   denom: string;
   duration_sec: number;
   period_finish: Timestamp;
+  period_start: Timestamp;
   rewards_per_second: Uint128;
   stake: Addr;
 }

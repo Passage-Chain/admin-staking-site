@@ -8,6 +8,7 @@ export const txCreateRewardAccount = async (
   sender: string,
   nftVaultAddress: string,
   label: string,
+  periodStart: Date,
   durationSec: number,
   funds: Coin,
 ) => {
@@ -17,9 +18,12 @@ export const txCreateRewardAccount = async (
     nftVaultAddress,
   )
 
+  const periodStartEpoch = (periodStart.getTime() * 1000000).toString()
+
   return nftVaultClient.createRewardAccount(
     {
       denom: funds.denom,
+      periodStart: periodStartEpoch,
       durationSec,
       label,
     },

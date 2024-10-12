@@ -5,7 +5,7 @@
 */
 
 import { UseQueryOptions, useQuery } from "react-query";
-import { InstantiateMsg, ExecuteMsg, ExecMsg, Uint128, QueryMsg, QueryMsg1, Timestamp, Uint64, Addr, Config, Uint256, CumulativeRewards, NullableUserReward, UserReward } from "./StakeRewards.types";
+import { Timestamp, Uint64, InstantiateMsg, ExecuteMsg, ExecMsg, Uint128, QueryMsg, QueryMsg1, Addr, Config, Uint256, CumulativeRewards, NullableUserReward, UserReward } from "./StakeRewards.types";
 import { StakeRewardsQueryClient } from "./StakeRewards.client";
 export const stakeRewardsQueryKeys = {
   contract: ([{

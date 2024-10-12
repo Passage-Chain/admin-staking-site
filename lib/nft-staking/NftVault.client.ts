@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, ConfigForString, ExecuteMsg, ExecMsg, NftForString, QueryMsg, QueryMsg1, QueryBoundForTupleOfStringAndString, QueryBoundForString, QueryOptionsForTupleOfStringAndString, QueryOptionsForString, Addr, Expiration, Timestamp, Uint64, ArrayOfClaim, Claim, NftForAddr, ConfigForAddr, ArrayOfAddr, NullableUint128, Uint128, ArrayOfTupleOfAddrAndUint64, ArrayOfStakedNft, StakedNft } from "./NftVault.types";
+import { InstantiateMsg, ConfigForString, ExecuteMsg, ExecMsg, Timestamp, Uint64, NftForString, QueryMsg, QueryMsg1, QueryBoundForTupleOfStringAndString, QueryBoundForString, QueryOptionsForTupleOfStringAndString, QueryOptionsForString, Addr, Expiration, ArrayOfClaim, Claim, NftForAddr, ConfigForAddr, ArrayOfAddr, NullableUint128, Uint128, ArrayOfTupleOfAddrAndUint64, ArrayOfStakedNft, StakedNft } from "./NftVault.types";
 export interface NftVaultReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<ConfigForAddr>;
@@ -123,11 +123,13 @@ export interface NftVaultInterface extends NftVaultReadOnlyInterface {
   createRewardAccount: ({
     denom,
     durationSec,
-    label
+    label,
+    periodStart
   }: {
     denom: string;
     durationSec: number;
     label: string;
+    periodStart: Timestamp;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   stake: ({
     nfts,
@@ -187,17 +189,20 @@ export class NftVaultClient extends NftVaultQueryClient implements NftVaultInter
   createRewardAccount = async ({
     denom,
     durationSec,
-    label
+    label,
+    periodStart
   }: {
     denom: string;
     durationSec: number;
     label: string;
+    periodStart: Timestamp;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       create_reward_account: {
         denom,
         duration_sec: durationSec,
-        label
+        label,
+        period_start: periodStart
       }
     }, fee, memo, _funds);
   };

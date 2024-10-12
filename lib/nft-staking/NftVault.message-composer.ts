@@ -8,7 +8,7 @@ import { Coin } from "@cosmjs/amino";
 import { MsgExecuteContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
 import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 import { toUtf8 } from "@cosmjs/encoding";
-import { InstantiateMsg, ConfigForString, ExecuteMsg, ExecMsg, NftForString, QueryMsg, QueryMsg1, QueryBoundForTupleOfStringAndString, QueryBoundForString, QueryOptionsForTupleOfStringAndString, QueryOptionsForString, Addr, Expiration, Timestamp, Uint64, ArrayOfClaim, Claim, NftForAddr, ConfigForAddr, ArrayOfAddr, NullableUint128, Uint128, ArrayOfTupleOfAddrAndUint64, ArrayOfStakedNft, StakedNft } from "./NftVault.types";
+import { InstantiateMsg, ConfigForString, ExecuteMsg, ExecMsg, Timestamp, Uint64, NftForString, QueryMsg, QueryMsg1, QueryBoundForTupleOfStringAndString, QueryBoundForString, QueryOptionsForTupleOfStringAndString, QueryOptionsForString, Addr, Expiration, ArrayOfClaim, Claim, NftForAddr, ConfigForAddr, ArrayOfAddr, NullableUint128, Uint128, ArrayOfTupleOfAddrAndUint64, ArrayOfStakedNft, StakedNft } from "./NftVault.types";
 export interface NftVaultMsg {
   contractAddress: string;
   sender: string;
@@ -22,11 +22,13 @@ export interface NftVaultMsg {
   createRewardAccount: ({
     denom,
     durationSec,
-    label
+    label,
+    periodStart
   }: {
     denom: string;
     durationSec: number;
     label: string;
+    periodStart: Timestamp;
   }, _funds?: Coin[]) => MsgExecuteContractEncodeObject;
   stake: ({
     nfts,
@@ -91,11 +93,13 @@ export class NftVaultMsgComposer implements NftVaultMsg {
   createRewardAccount = ({
     denom,
     durationSec,
-    label
+    label,
+    periodStart
   }: {
     denom: string;
     durationSec: number;
     label: string;
+    periodStart: Timestamp;
   }, _funds?: Coin[]): MsgExecuteContractEncodeObject => {
     return {
       typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
@@ -106,7 +110,8 @@ export class NftVaultMsgComposer implements NftVaultMsg {
           create_reward_account: {
             denom,
             duration_sec: durationSec,
-            label
+            label,
+            period_start: periodStart
           }
         })),
         funds: _funds

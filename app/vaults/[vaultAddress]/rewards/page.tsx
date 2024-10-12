@@ -23,6 +23,7 @@ import { ChevronLeftIcon } from '@radix-ui/react-icons'
 
 const createRewardAccountFormSchema = z.object({
   label: z.string(),
+  periodStart: z.string(),
   durationSec: z.number().min(0),
   denom: z.string(),
   microAmount: z.number().min(0),
@@ -42,6 +43,7 @@ export default function CreateRewardAccount() {
   const createVaultForm = useForm<CreateRewardAccountFormSchema>({
     resolver: zodResolver(createRewardAccountFormSchema),
     defaultValues: {
+      periodStart: '',
       durationSec: 0,
       denom: '',
     },
@@ -62,6 +64,7 @@ export default function CreateRewardAccount() {
             sender,
             nftVaultAddress,
             data.label,
+            new Date(data.periodStart),
             data.durationSec,
             {
               denom: data.denom,
@@ -98,7 +101,7 @@ export default function CreateRewardAccount() {
               name="label"
               render={({ field }) => {
                 return (
-                  <FormItem className="flex flex-row justify-center items-center space-x-2 space-y-0">
+                  <FormItem className="flex flex-row justify-between items-center space-x-2 space-y-0 w-full">
                     <FormLabel className="font-light w-64">Label</FormLabel>
                     <FormControl>
                       <Input
@@ -113,10 +116,31 @@ export default function CreateRewardAccount() {
             />
             <FormField
               control={createVaultForm.control}
+              name="periodStart"
+              render={({ field }) => {
+                return (
+                  <FormItem className="flex flex-row justify-between items-center space-x-2 space-y-0 w-full">
+                    <FormLabel className="font-light w-64">
+                      Reward Start
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="datetime-local"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.value)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )
+              }}
+            />
+            <FormField
+              control={createVaultForm.control}
               name="durationSec"
               render={({ field }) => {
                 return (
-                  <FormItem className="flex flex-row justify-center items-center space-x-2 space-y-0">
+                  <FormItem className="flex flex-row justify-between items-center space-x-2 space-y-0 w-full">
                     <FormLabel className="font-light w-64">
                       Reward Duration (seconds)
                     </FormLabel>
@@ -136,7 +160,7 @@ export default function CreateRewardAccount() {
               name="denom"
               render={({ field }) => {
                 return (
-                  <FormItem className="flex flex-row justify-center items-center space-x-2 space-y-0">
+                  <FormItem className="flex flex-row justify-between items-center space-x-2 space-y-0 w-full">
                     <FormLabel className="font-light w-64">Denom</FormLabel>
                     <FormControl>
                       <Input
@@ -154,7 +178,7 @@ export default function CreateRewardAccount() {
               name="microAmount"
               render={({ field }) => {
                 return (
-                  <FormItem className="flex flex-row justify-center items-center space-x-2 space-y-0">
+                  <FormItem className="flex flex-row justify-between items-center space-x-2 space-y-0 w-full">
                     <FormLabel className="font-light w-64">
                       Micro Amount
                     </FormLabel>

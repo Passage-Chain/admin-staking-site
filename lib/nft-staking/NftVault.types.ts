@@ -23,6 +23,7 @@ export type ExecMsg = {
     denom: string;
     duration_sec: number;
     label: string;
+    period_start: Timestamp;
   };
 } | {
   stake: {
@@ -43,6 +44,8 @@ export type ExecMsg = {
     recipient?: string | null;
   };
 };
+export type Timestamp = Uint64;
+export type Uint64 = string;
 export interface NftForString {
   collection: string;
   token_id: string;
@@ -101,8 +104,6 @@ export type Expiration = {
 } | {
   never: {};
 };
-export type Timestamp = Uint64;
-export type Uint64 = string;
 export type ArrayOfClaim = Claim[];
 export interface Claim {
   nfts: NftForAddr[];

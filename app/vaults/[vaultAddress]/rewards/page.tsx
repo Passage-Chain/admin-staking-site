@@ -18,14 +18,13 @@ import { Button } from '@/components/ui/button'
 import _ from 'lodash'
 import { useParams, useRouter } from 'next/navigation'
 import { txCreateRewardAccount } from '@/lib/txs/create-reward-account'
-import { useConnection } from '@/lib/providers/connection'
 import { ChevronLeftIcon } from '@radix-ui/react-icons'
 
 const createRewardAccountFormSchema = z.object({
   label: z.string(),
   periodStart: z.string(),
   durationSec: z.number().min(0),
-  denom: z.string(),
+  asset: z.string(),
   microAmount: z.number().min(0),
 })
 
@@ -45,7 +44,7 @@ export default function CreateRewardAccount() {
     defaultValues: {
       periodStart: '',
       durationSec: 0,
-      denom: '',
+      asset: '',
     },
   })
 
@@ -67,7 +66,7 @@ export default function CreateRewardAccount() {
             new Date(data.periodStart),
             data.durationSec,
             {
-              denom: data.denom,
+              denom: data.asset,
               amount: data.microAmount.toString(),
             },
           ),
@@ -157,14 +156,15 @@ export default function CreateRewardAccount() {
             />
             <FormField
               control={createVaultForm.control}
-              name="denom"
+              name="asset"
               render={({ field }) => {
                 return (
                   <FormItem className="flex flex-row justify-between items-center space-x-2 space-y-0 w-full">
-                    <FormLabel className="font-light w-64">Denom</FormLabel>
+                    <FormLabel className="font-light w-64">Asset</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
+                        placeholder="Native Denom or Cw20 Address"
                         onChange={(e) => field.onChange(e.target.value)}
                       />
                     </FormControl>

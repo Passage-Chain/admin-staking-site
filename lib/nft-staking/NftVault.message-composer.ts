@@ -8,7 +8,7 @@ import { Coin } from "@cosmjs/amino";
 import { MsgExecuteContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
 import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 import { toUtf8 } from "@cosmjs/encoding";
-import { InstantiateMsg, ConfigForString, ExecuteMsg, ExecMsg, Timestamp, Uint64, NftForString, QueryMsg, QueryMsg1, QueryBoundForTupleOfStringAndString, QueryBoundForString, QueryOptionsForTupleOfStringAndString, QueryOptionsForString, Addr, Expiration, ArrayOfClaim, Claim, NftForAddr, ConfigForAddr, ArrayOfAddr, NullableUint128, Uint128, ArrayOfTupleOfAddrAndUint64, ArrayOfStakedNft, StakedNft } from "./NftVault.types";
+import { InstantiateMsg, ConfigForString, ExecuteMsg, ExecMsg, Timestamp, Uint64, RewardAsset, Addr, NftForString, QueryMsg, QueryMsg1, QueryBoundForTupleOfStringAndString, QueryBoundForString, QueryOptionsForTupleOfStringAndString, QueryOptionsForString, Expiration, ArrayOfClaim, Claim, NftForAddr, ConfigForAddr, ArrayOfAddr, NullableUint128, Uint128, ArrayOfTupleOfAddrAndUint64, ArrayOfStakedNft, StakedNft } from "./NftVault.types";
 export interface NftVaultMsg {
   contractAddress: string;
   sender: string;
@@ -20,29 +20,25 @@ export interface NftVaultMsg {
     unstakingDurationSec?: number;
   }, _funds?: Coin[]) => MsgExecuteContractEncodeObject;
   createRewardAccount: ({
-    denom,
     durationSec,
     label,
-    periodStart
+    periodStart,
+    rewardAsset
   }: {
-    denom: string;
     durationSec: number;
     label: string;
     periodStart: Timestamp;
+    rewardAsset: RewardAsset;
   }, _funds?: Coin[]) => MsgExecuteContractEncodeObject;
   stake: ({
-    nfts,
-    recipient
+    nfts
   }: {
     nfts: NftForString[];
-    recipient?: string;
   }, _funds?: Coin[]) => MsgExecuteContractEncodeObject;
   unstake: ({
-    nfts,
-    recipient
+    nfts
   }: {
     nfts: NftForString[];
-    recipient?: string;
   }, _funds?: Coin[]) => MsgExecuteContractEncodeObject;
   claim: ({
     recipient
@@ -91,15 +87,15 @@ export class NftVaultMsgComposer implements NftVaultMsg {
     };
   };
   createRewardAccount = ({
-    denom,
     durationSec,
     label,
-    periodStart
+    periodStart,
+    rewardAsset
   }: {
-    denom: string;
     durationSec: number;
     label: string;
     periodStart: Timestamp;
+    rewardAsset: RewardAsset;
   }, _funds?: Coin[]): MsgExecuteContractEncodeObject => {
     return {
       typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
@@ -108,10 +104,10 @@ export class NftVaultMsgComposer implements NftVaultMsg {
         contract: this.contractAddress,
         msg: toUtf8(JSON.stringify({
           create_reward_account: {
-            denom,
             duration_sec: durationSec,
             label,
-            period_start: periodStart
+            period_start: periodStart,
+            reward_asset: rewardAsset
           }
         })),
         funds: _funds
@@ -119,11 +115,9 @@ export class NftVaultMsgComposer implements NftVaultMsg {
     };
   };
   stake = ({
-    nfts,
-    recipient
+    nfts
   }: {
     nfts: NftForString[];
-    recipient?: string;
   }, _funds?: Coin[]): MsgExecuteContractEncodeObject => {
     return {
       typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
@@ -132,8 +126,7 @@ export class NftVaultMsgComposer implements NftVaultMsg {
         contract: this.contractAddress,
         msg: toUtf8(JSON.stringify({
           stake: {
-            nfts,
-            recipient
+            nfts
           }
         })),
         funds: _funds
@@ -141,11 +134,9 @@ export class NftVaultMsgComposer implements NftVaultMsg {
     };
   };
   unstake = ({
-    nfts,
-    recipient
+    nfts
   }: {
     nfts: NftForString[];
-    recipient?: string;
   }, _funds?: Coin[]): MsgExecuteContractEncodeObject => {
     return {
       typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
@@ -154,8 +145,7 @@ export class NftVaultMsgComposer implements NftVaultMsg {
         contract: this.contractAddress,
         msg: toUtf8(JSON.stringify({
           unstake: {
-            nfts,
-            recipient
+            nfts
           }
         })),
         funds: _funds

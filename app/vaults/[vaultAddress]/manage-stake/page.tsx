@@ -19,7 +19,6 @@ import { txUnstakeNft } from '@/lib/txs/unstake-nft'
 import { txClaimNfts } from '@/lib/txs/claim-nft'
 import { StakeRewardsQueryClient } from '@/lib/nft-staking/StakeRewards.client'
 import { txClaimRewards } from '@/lib/txs/claim-rewards'
-import { txUpdateRewards } from '@/lib/txs/update-rewards'
 
 export default function ManageVaultStake() {
   const router = useRouter()
@@ -45,6 +44,7 @@ export default function ManageVaultStake() {
   const [userRewards, setUserRewards] = useState<string[] | undefined>(
     undefined,
   )
+
   useEffect(() => {
     ;(async () => {
       if (!cosmWasmClient) {
@@ -141,6 +141,23 @@ export default function ManageVaultStake() {
         return
       }
 
+      const nftVaultQueryClient = new NftVaultQueryClient(
+        cosmWasmClient,
+        nftVaultAddress,
+      )
+
+      const userStakedAmounts =
+        await nftVaultQueryClient.usersCollectionStakedAmounts({
+          staker: sender,
+          queryOptions: {},
+        })
+      const stakedAmount =
+        _.min(_.map(userStakedAmounts, (amount) => amount[1])) || 0
+
+      const totalStakedResult =
+        await nftVaultQueryClient.totalStakedAmountAtHeight({})
+      const totalStaked = totalStakedResult ? Number(totalStakedResult) : 0
+
       const userRewards: string[] = []
       for (const rewardAccount of rewardAccounts) {
         const stakeRewardsClient = new StakeRewardsQueryClient(
@@ -148,16 +165,28 @@ export default function ManageVaultStake() {
           rewardAccount,
         )
         const config = await stakeRewardsClient.config()
-        const userReward = await stakeRewardsClient.userReward({
+
+        const userReward = await stakeRewardsClient.latestUserReward({
           address: sender,
+          stakedAmount: stakedAmount.toString(),
+          totalStaked: totalStaked.toString(),
         })
+
+        let denom: string
+        if ('cw20' in config.reward_asset) {
+          denom = config.reward_asset.cw20
+        } else {
+          denom = config.reward_asset.native
+        }
+
         if (userReward) {
-          userRewards.push(`${userReward.pending_rewards}${config.denom}`)
+          userRewards.push(`${userReward.pending_rewards} ${denom}`)
         }
       }
+
       setUserRewards(userRewards)
     })()
-  }, [cosmWasmClient, rewardAccounts, sender, refresh])
+  }, [cosmWasmClient, rewardAccounts, sender, refresh, nftVaultAddress])
 
   const onStake = useCallback(
     async (collection: string, tokenId: string) => {
@@ -222,23 +251,6 @@ export default function ManageVaultStake() {
       await exec(
         'Claim Nfts',
         txClaimNfts.bind(null, signingCwClient, sender, nftVaultAddress),
-      )
-
-      setRefresh(!refresh)
-    } catch (e) {
-      console.error(e)
-    }
-  }, [signingCwClient, sender, exec, nftVaultAddress, refresh])
-
-  const onUpdateRewards = useCallback(async () => {
-    if (!signingCwClient || !sender) {
-      return
-    }
-
-    try {
-      await exec(
-        'Update Rewards',
-        txUpdateRewards.bind(null, signingCwClient, sender, nftVaultAddress),
       )
 
       setRefresh(!refresh)

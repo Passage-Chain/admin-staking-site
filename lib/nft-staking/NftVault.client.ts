@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, ConfigForString, ExecuteMsg, ExecMsg, Timestamp, Uint64, NftForString, QueryMsg, QueryMsg1, QueryBoundForTupleOfStringAndString, QueryBoundForString, QueryOptionsForTupleOfStringAndString, QueryOptionsForString, Addr, Expiration, ArrayOfClaim, Claim, NftForAddr, ConfigForAddr, ArrayOfAddr, NullableUint128, Uint128, ArrayOfTupleOfAddrAndUint64, ArrayOfStakedNft, StakedNft } from "./NftVault.types";
+import { InstantiateMsg, ConfigForString, ExecuteMsg, ExecMsg, Timestamp, Uint64, RewardAsset, Addr, NftForString, QueryMsg, QueryMsg1, QueryBoundForTupleOfStringAndString, QueryBoundForString, QueryOptionsForTupleOfStringAndString, QueryOptionsForString, Expiration, ArrayOfClaim, Claim, NftForAddr, ConfigForAddr, ArrayOfAddr, NullableUint128, Uint128, ArrayOfTupleOfAddrAndUint64, ArrayOfStakedNft, StakedNft } from "./NftVault.types";
 export interface NftVaultReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<ConfigForAddr>;
@@ -121,29 +121,25 @@ export interface NftVaultInterface extends NftVaultReadOnlyInterface {
     unstakingDurationSec?: number;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   createRewardAccount: ({
-    denom,
     durationSec,
     label,
-    periodStart
+    periodStart,
+    rewardAsset
   }: {
-    denom: string;
     durationSec: number;
     label: string;
     periodStart: Timestamp;
+    rewardAsset: RewardAsset;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   stake: ({
-    nfts,
-    recipient
+    nfts
   }: {
     nfts: NftForString[];
-    recipient?: string;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   unstake: ({
-    nfts,
-    recipient
+    nfts
   }: {
     nfts: NftForString[];
-    recipient?: string;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   claim: ({
     recipient
@@ -187,50 +183,44 @@ export class NftVaultClient extends NftVaultQueryClient implements NftVaultInter
     }, fee, memo, _funds);
   };
   createRewardAccount = async ({
-    denom,
     durationSec,
     label,
-    periodStart
+    periodStart,
+    rewardAsset
   }: {
-    denom: string;
     durationSec: number;
     label: string;
     periodStart: Timestamp;
+    rewardAsset: RewardAsset;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       create_reward_account: {
-        denom,
         duration_sec: durationSec,
         label,
-        period_start: periodStart
+        period_start: periodStart,
+        reward_asset: rewardAsset
       }
     }, fee, memo, _funds);
   };
   stake = async ({
-    nfts,
-    recipient
+    nfts
   }: {
     nfts: NftForString[];
-    recipient?: string;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       stake: {
-        nfts,
-        recipient
+        nfts
       }
     }, fee, memo, _funds);
   };
   unstake = async ({
-    nfts,
-    recipient
+    nfts
   }: {
     nfts: NftForString[];
-    recipient?: string;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       unstake: {
-        nfts,
-        recipient
+        nfts
       }
     }, fee, memo, _funds);
   };

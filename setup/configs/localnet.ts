@@ -16,6 +16,15 @@ export const localConfig: Config = {
   artifacts: [
     {
       group: 'nft-staking',
+      name: 'cw20',
+      version: '2.0.0',
+      resource: path.resolve(
+        projectRoot,
+        'apps/staking-site/setup/contracts/cw20_base.wasm',
+      ),
+    },
+    {
+      group: 'nft-staking',
       name: 'cw721',
       version: '0.19.0',
       resource: path.resolve(

@@ -6,10 +6,16 @@
 
 export type Timestamp = Uint64;
 export type Uint64 = string;
+export type RewardAsset = {
+  native: string;
+} | {
+  cw20: Addr;
+};
+export type Addr = string;
 export interface InstantiateMsg {
-  denom: string;
   duration_sec: number;
   period_start: Timestamp;
+  reward_asset: RewardAsset;
   stake: string;
 }
 export type ExecuteMsg = ExecMsg;
@@ -36,24 +42,29 @@ export type QueryMsg1 = {
   user_reward: {
     address: string;
   };
+} | {
+  latest_user_reward: {
+    address: string;
+    staked_amount: Uint128;
+    total_staked: Uint128;
+  };
 };
-export type Addr = string;
 export interface Config {
-  denom: string;
   duration_sec: number;
   period_finish: Timestamp;
   period_start: Timestamp;
+  reward_asset: RewardAsset;
   rewards_per_second: Uint128;
   stake: Addr;
 }
-export type Uint256 = string;
-export interface CumulativeRewards {
-  last_update: Timestamp;
-  rewards_per_token: Uint256;
-}
 export type NullableUserReward = UserReward | null;
+export type Uint256 = string;
 export interface UserReward {
   claimed_rewards: Uint128;
   pending_rewards: Uint128;
   rewards_checkpoint: Uint256;
+}
+export interface CumulativeRewards {
+  last_update: Timestamp;
+  rewards_per_token: Uint256;
 }

@@ -20,20 +20,18 @@ export type ExecMsg = {
   };
 } | {
   create_reward_account: {
-    denom: string;
     duration_sec: number;
     label: string;
     period_start: Timestamp;
+    reward_asset: RewardAsset;
   };
 } | {
   stake: {
     nfts: NftForString[];
-    recipient?: string | null;
   };
 } | {
   unstake: {
     nfts: NftForString[];
-    recipient?: string | null;
   };
 } | {
   claim: {
@@ -46,6 +44,12 @@ export type ExecMsg = {
 };
 export type Timestamp = Uint64;
 export type Uint64 = string;
+export type RewardAsset = {
+  native: string;
+} | {
+  cw20: Addr;
+};
+export type Addr = string;
 export interface NftForString {
   collection: string;
   token_id: string;
@@ -96,7 +100,6 @@ export interface QueryOptionsForString {
   max?: QueryBoundForString | null;
   min?: QueryBoundForString | null;
 }
-export type Addr = string;
 export type Expiration = {
   at_height: number;
 } | {

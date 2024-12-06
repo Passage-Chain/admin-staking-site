@@ -3,34 +3,7 @@ import _ from 'lodash'
 import assert from 'assert'
 import { localConfig } from './configs/localnet'
 import { InstantiateMsg as VaultFactoryInstantiateMsg } from '../lib/nft-staking/VaultFactory.types'
-
-const mintNfts = async (
-  context: ChainContext,
-  collectionAddress: string,
-  recipientAddress: string,
-  tokenIds: string[],
-) => {
-  assert(context.adminUser, 'adminUser not found')
-  const adminUser = context.adminUser
-
-  for (const tokenId of tokenIds) {
-    const executeMsg = {
-      mint: {
-        token_id: tokenId,
-        owner: recipientAddress,
-        token_uri: undefined,
-        extension: undefined,
-      },
-    }
-    await adminUser.cwClient.execute(
-      adminUser.address,
-      collectionAddress,
-      executeMsg,
-      'auto',
-    )
-    context.childLogger.info(`Minted ${tokenId} to ${recipientAddress}`)
-  }
-}
+import { VaultFactoryClient } from '@/lib/nft-staking/VaultFactory.client'
 
 const instantiateVaultFactory = (
   context: ChainContext,
@@ -51,6 +24,28 @@ const instantiateVaultFactory = (
     adminUser,
     ChainContext.buildContractKey('nft-staking', 'vault-factory', '0.1.0'),
     instantiateMsg,
+  )
+}
+
+const instantiateCw20 = (context: ChainContext, adminUser: UserClient) => {
+  return context.instantiateContract(
+    adminUser,
+    ChainContext.buildContractKey('nft-staking', 'cw20', '2.0.0'),
+    {
+      name: 'Reward Token',
+      symbol: 'RWD',
+      decimals: 6,
+      initial_balances: [
+        {
+          amount: '1000000000000000',
+          address: adminUser.address,
+        },
+      ],
+      mint: undefined,
+      marketing: undefined,
+    },
+    'Reward Token',
+    true,
   )
 }
 
@@ -80,6 +75,55 @@ const instantiateNftCollection = (
   )
 }
 
+const mintNfts = async (
+  context: ChainContext,
+  collectionAddress: string,
+  recipientAddress: string,
+  tokenIds: string[],
+) => {
+  assert(context.adminUser, 'adminUser not found')
+  const adminUser = context.adminUser
+
+  for (const tokenId of tokenIds) {
+    const executeMsg = {
+      mint: {
+        token_id: tokenId,
+        owner: recipientAddress,
+        token_uri: undefined,
+        extension: undefined,
+      },
+    }
+    await adminUser.cwClient.execute(
+      adminUser.address,
+      collectionAddress,
+      executeMsg,
+      'auto',
+    )
+    context.childLogger.info(`Minted ${tokenId} to ${recipientAddress}`)
+  }
+}
+
+const instantiateVault = async (
+  adminUser: UserClient,
+  vaultFactoryAddress: string,
+  collections: string[],
+) => {
+  const vaultFactoryClient = new VaultFactoryClient(
+    adminUser.cwClient,
+    adminUser.address,
+    vaultFactoryAddress,
+  )
+
+  const unstakingDurationSec = 30
+  const vaultLabel = 'Test Vault 1'
+
+  return vaultFactoryClient.createVault({
+    collections,
+    unstakingDurationSec,
+    vaultLabel,
+  })
+}
+
 const setup = async (): Promise<void> => {
   const context = new ChainContext('nft-staking', localConfig, 'user0')
 
@@ -90,6 +134,7 @@ const setup = async (): Promise<void> => {
   assert(context.adminUser, 'adminUser not found')
 
   await instantiateVaultFactory(context, context.adminUser)
+  await instantiateCw20(context, context.adminUser)
 
   const instantiateResult1 = await instantiateNftCollection(
     context,
@@ -125,6 +170,15 @@ const setup = async (): Promise<void> => {
     '4',
     '5',
   ])
+
+  const vaultFactoryAddress = await context.expectContractAddress(
+    ChainContext.buildContractKey('nft-staking', 'vault-factory', '0.1.0'),
+  )
+  await instantiateVault(context.adminUser, vaultFactoryAddress, [
+    collectionAddress1,
+    collectionAddress2,
+  ])
+  context.childLogger.info(`Vault created`)
 }
 
 setup().catch((err) => {

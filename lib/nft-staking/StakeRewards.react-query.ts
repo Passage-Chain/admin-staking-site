@@ -5,7 +5,7 @@
 */
 
 import { UseQueryOptions, useQuery } from "react-query";
-import { Timestamp, Uint64, InstantiateMsg, ExecuteMsg, ExecMsg, Uint128, QueryMsg, QueryMsg1, Addr, Config, Uint256, CumulativeRewards, NullableUserReward, UserReward } from "./StakeRewards.types";
+import { Timestamp, Uint64, RewardAsset, Addr, InstantiateMsg, ExecuteMsg, ExecMsg, Uint128, QueryMsg, QueryMsg1, Config, NullableUserReward, Uint256, UserReward, CumulativeRewards } from "./StakeRewards.types";
 import { StakeRewardsQueryClient } from "./StakeRewards.client";
 export const stakeRewardsQueryKeys = {
   contract: ([{
@@ -28,6 +28,11 @@ export const stakeRewardsQueryKeys = {
   userReward: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
     ...stakeRewardsQueryKeys.address(contractAddress)[0],
     method: "user_reward",
+    args
+  }] as const),
+  latestUserReward: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
+    ...stakeRewardsQueryKeys.address(contractAddress)[0],
+    method: "latest_user_reward",
     args
   }] as const)
 };
@@ -61,11 +66,46 @@ export const stakeRewardsQueries = {
     }) : Promise.reject(new Error("Invalid client")),
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  latestUserReward: <TData = NullableUserReward,>({
+    client,
+    args,
+    options
+  }: StakeRewardsLatestUserRewardQuery<TData>): UseQueryOptions<NullableUserReward, Error, TData> => ({
+    queryKey: stakeRewardsQueryKeys.latestUserReward(client?.contractAddress, args),
+    queryFn: () => client ? client.latestUserReward({
+      address: args.address,
+      stakedAmount: args.stakedAmount,
+      totalStaked: args.totalStaked
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   })
 };
 export interface StakeRewardsReactQuery<TResponse, TData = TResponse> {
   client: StakeRewardsQueryClient | undefined;
   options?: UseQueryOptions<TResponse, Error, TData>;
+}
+export interface StakeRewardsLatestUserRewardQuery<TData> extends StakeRewardsReactQuery<NullableUserReward, TData> {
+  args: {
+    address: string;
+    stakedAmount: Uint128;
+    totalStaked: Uint128;
+  };
+}
+export function useStakeRewardsLatestUserRewardQuery<TData = NullableUserReward>({
+  client,
+  args,
+  options
+}: StakeRewardsLatestUserRewardQuery<TData>) {
+  return useQuery<NullableUserReward, Error, TData>(stakeRewardsQueryKeys.latestUserReward(client?.contractAddress, args), () => client ? client.latestUserReward({
+    address: args.address,
+    stakedAmount: args.stakedAmount,
+    totalStaked: args.totalStaked
+  }) : Promise.reject(new Error("Invalid client")), {
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface StakeRewardsUserRewardQuery<TData> extends StakeRewardsReactQuery<NullableUserReward, TData> {
   args: {

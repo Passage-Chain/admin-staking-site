@@ -8,7 +8,7 @@ import { Coin } from "@cosmjs/amino";
 import { MsgExecuteContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
 import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 import { toUtf8 } from "@cosmjs/encoding";
-import { Timestamp, Uint64, InstantiateMsg, ExecuteMsg, ExecMsg, Uint128, QueryMsg, QueryMsg1, Addr, Config, Uint256, CumulativeRewards, NullableUserReward, UserReward } from "./StakeRewards.types";
+import { Timestamp, Uint64, RewardAsset, Addr, InstantiateMsg, ExecuteMsg, ExecMsg, Uint128, QueryMsg, QueryMsg1, Config, NullableUserReward, Uint256, UserReward, CumulativeRewards } from "./StakeRewards.types";
 export interface StakeRewardsMsg {
   contractAddress: string;
   sender: string;

@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { Timestamp, Uint64, InstantiateMsg, ExecuteMsg, ExecMsg, Uint128, QueryMsg, QueryMsg1, Addr, Config, Uint256, CumulativeRewards, NullableUserReward, UserReward } from "./StakeRewards.types";
+import { Timestamp, Uint64, RewardAsset, Addr, InstantiateMsg, ExecuteMsg, ExecMsg, Uint128, QueryMsg, QueryMsg1, Config, NullableUserReward, Uint256, UserReward, CumulativeRewards } from "./StakeRewards.types";
 export interface StakeRewardsReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<Config>;
@@ -15,6 +15,15 @@ export interface StakeRewardsReadOnlyInterface {
     address
   }: {
     address: string;
+  }) => Promise<NullableUserReward>;
+  latestUserReward: ({
+    address,
+    stakedAmount,
+    totalStaked
+  }: {
+    address: string;
+    stakedAmount: Uint128;
+    totalStaked: Uint128;
   }) => Promise<NullableUserReward>;
 }
 export class StakeRewardsQueryClient implements StakeRewardsReadOnlyInterface {
@@ -26,6 +35,7 @@ export class StakeRewardsQueryClient implements StakeRewardsReadOnlyInterface {
     this.config = this.config.bind(this);
     this.rewards = this.rewards.bind(this);
     this.userReward = this.userReward.bind(this);
+    this.latestUserReward = this.latestUserReward.bind(this);
   }
   config = async (): Promise<Config> => {
     return this.client.queryContractSmart(this.contractAddress, {
@@ -45,6 +55,23 @@ export class StakeRewardsQueryClient implements StakeRewardsReadOnlyInterface {
     return this.client.queryContractSmart(this.contractAddress, {
       user_reward: {
         address
+      }
+    });
+  };
+  latestUserReward = async ({
+    address,
+    stakedAmount,
+    totalStaked
+  }: {
+    address: string;
+    stakedAmount: Uint128;
+    totalStaked: Uint128;
+  }): Promise<NullableUserReward> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      latest_user_reward: {
+        address,
+        staked_amount: stakedAmount,
+        total_staked: totalStaked
       }
     });
   };
